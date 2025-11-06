@@ -19,6 +19,22 @@ def get_section_by_anchor(soup: BeautifulSoup, anchor_id: str):
         return None
     return anchor.find_parent("section")
 
+def dedupe_phrase(s: str) -> str:
+    # remove immediate duplicate tokens like "Founder Founder"
+    parts = [p for p in s.split() if p]
+    out = []
+    for i, p in enumerate(parts):
+        if i > 0 and p == parts[i-1]:
+            continue
+        out.append(p)
+    return " ".join(out).strip()
+
+def dedupe_neighbor_strings(a: str, b: str) -> tuple[str, str]:
+    # if a and b are identical, blank b
+    if a and b and a.strip().lower() == b.strip().lower():
+        return a, ""
+    return a, b
+
 def extract_header(soup: BeautifulSoup):
     name = ""
     headline = ""
@@ -107,6 +123,11 @@ def extract_experiences(soup: BeautifulSoup):
             title = block_texts[0]
             if len(block_texts) > 1:
                 company = block_texts[1]
+        
+        #Dedupe title and company
+        title = dedupe_phrase(title)
+        company = dedupe_phrase(company)
+        title, company = dedupe_neighbor_strings(title, company)
 
         # dates: first small line containing month/year/present/current
         dates = ""
@@ -156,6 +177,11 @@ def extract_education(soup: BeautifulSoup):
             elif not degree and 2 <= len(line) <= 120:
                 degree = line
 
+        #Dedupe school and degree
+        school = dedupe_phrase(school)
+        degree = dedupe_phrase(degree)
+        school, degree = dedupe_neighbor_strings(school, degree)
+        
         edu.append({"school": school, "degree": degree, "dates": dates})
     return edu
 

@@ -1,6 +1,10 @@
 import time
 from random import uniform
-
+import json
+import time
+import random
+import pandas as pd
+from parser import parse_profile
 from utils import (
     get_driver,
     login,
@@ -8,6 +12,8 @@ from utils import (
     wait_for_profile_loaded,
     human_scroll,
     save_html,
+    expand_see_more,
+    now_utc_iso
 )
 
 
@@ -18,30 +24,65 @@ def main() -> None:
         print("Logged in OK")
 
         urls = read_urls("urls.txt")
-        print(f"Found {len(urls)} URLs, processing first 3 (dry run)...")
+        print(f"Found {len(urls)} URLs, processing all...")
 
-        for i, url in enumerate(urls[:3], 1):
-            print(f"\n[{i}/3] Processing: {url}")
+        rows = []
+
+        for i, url in enumerate(urls, 1):
+            print(f"\n[{i}/{len(urls)}] Processing: {url}")
+            
             driver.get(url)
-
+            
             wait_for_profile_loaded(driver)
-
+            
+            # Expand "See more" buttons to get full content
+            expand_see_more(driver)
+            
             # Scroll to bottom with human-like behavior
-            human_scroll(driver, total_pause_sec=5)
-
-            # Optional pause at bottom (1-2s)
-            time.sleep(uniform(1.0, 2.0))
-
-            path = save_html(driver, url)
-            print(f"Saved: {path}")
-
-            # Sleep 8-15s before next profile (except for last)
-            if i < 3:
-                sleep_time = uniform(8.0, 15.0)
-                print(f"Waiting {sleep_time:.1f}s before next profile...")
+            human_scroll(driver, total_pause_sec=6)
+            
+            # Optional: save HTML for debugging (comment out if not needed)
+            # save_html(driver, url)
+            
+            # Get page source and parse
+            html = driver.page_source
+            record = parse_profile(html)
+            
+            # Fill live-only fields
+            record["profile_url"] = url
+            record["last_scraped_at"] = now_utc_iso()
+            record["experiences_json"] = json.dumps(record["experiences_json"], ensure_ascii=False)
+            record["education_json"] = json.dumps(record["education_json"], ensure_ascii=False)
+            
+            rows.append(record)
+            print(f"  Extracted: {record.get('full_name', 'N/A')}")
+            
+            # Polite delay before next profile (except for last)
+            if i < len(urls):
+                sleep_time = random.uniform(8, 15)
+                print(f"  Waiting {sleep_time:.1f}s before next profile...")
                 time.sleep(sleep_time)
 
-        print("\nDry run complete!")
+        print(f"\nProcessed {len(rows)} profiles. Writing CSV...")
+        
+        # Write CSV
+        df = pd.DataFrame(rows, columns=[
+            "profile_url",
+            "full_name",
+            "headline",
+            "location",
+            "about",
+            "current_position_title",
+            "current_position_company",
+            "current_position_dates",
+            "experiences_json",
+            "education_json",
+            "skills",
+            "last_scraped_at",
+        ])
+        df.to_csv("profiles.csv", index=False)
+        print(f"Saved to profiles.csv")
+        
     finally:
         driver.quit()
 

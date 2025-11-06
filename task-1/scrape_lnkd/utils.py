@@ -8,6 +8,7 @@ from random import uniform
 from typing import Optional
 
 from dotenv import load_dotenv
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
@@ -17,6 +18,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from parser import clean_text
 
 
 def get_driver() -> RemoteWebDriver:
@@ -197,3 +199,54 @@ def save_html(driver: RemoteWebDriver, url: str, out_dir: str = "html_dumps") ->
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
     return out_path
+
+def expand_see_more(driver: RemoteWebDriver) -> None:
+    """
+    Click any visible "See more" buttons in About/Experience/Education sections.
+    Limits to ~3 clicks per page to avoid infinite loops.
+    """
+    see_more_pattern = re.compile(r"see more|show all|show more", re.I)
+    clicked_count = 0
+    max_clicks = 3
+    
+    try:
+        # Find all buttons and spans that might contain "see more" text
+        candidates = driver.find_elements(By.XPATH, "//button | //span | //a")
+        
+        for elem in candidates:
+            if clicked_count >= max_clicks:
+                break
+            
+            try:
+                # Check if element is visible and contains matching text
+                if not elem.is_displayed():
+                    continue
+                
+                text = clean_text(elem.text)
+                if not text:
+                    # Try getting text from aria-label or other attributes
+                    text = elem.get_attribute("aria-label") or ""
+                    text = clean_text(text)
+                
+                # Check if text matches the pattern
+                if see_more_pattern.search(text):
+                    # Try to click it
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", elem)
+                    time.sleep(0.3)  # Brief pause before click
+                    elem.click()
+                    clicked_count += 1
+                    time.sleep(0.5)  # Brief pause after click to let content expand
+            except Exception:
+                # Ignore failures for individual elements
+                continue
+    except Exception:
+        # Ignore any overall failures
+        pass
+
+
+def now_utc_iso() -> str:
+    """
+    Return current UTC time in ISO format with 'Z' suffix.
+    Example: "2024-01-15T10:30:45Z"
+    """
+    return datetime.utcnow().isoformat(timespec="seconds") + "Z"
