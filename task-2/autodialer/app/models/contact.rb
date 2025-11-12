@@ -1,2 +1,3 @@
 class Contact < ApplicationRecord
-end
+    has_many :call_logs, dependent: :destroy
+  end  

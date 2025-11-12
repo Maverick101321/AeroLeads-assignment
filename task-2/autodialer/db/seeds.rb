@@ -7,3 +7,15 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+Contact.destroy_all
+numbers = [
+  "+9118001000001", "+9118001000002", "+9118001000003",
+  "+9118001000004", "+9118001000005", "+9118001000006",
+  "+9118001000007", "+9118001000008", "+9118001000009",
+  "+9118001000010"
+]
+numbers.each do |num|
+  Contact.create!(phone_number: num, status: "pending")
+end
+puts "Seeded #{Contact.count} contacts."

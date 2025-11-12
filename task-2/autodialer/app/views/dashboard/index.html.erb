@@ -1,2 +1,17 @@
-<h1>Dashboard#index</h1>
-<p>Find me in app/views/dashboard/index.html.erb</p>
+<h1>Autodialer Dashboard</h1>
+
+<table border="1" cellpadding="8">
+  <tr><th>Phone Number</th><th>Status</th><th>Last Called</th></tr>
+  <% @contacts.each do |c| %>
+    <tr>
+      <td><%= c.phone_number %></td>
+      <td><%= c.status %></td>
+      <td><%= c.last_called_at %></td>
+    </tr>
+  <% end %>
+</table>
+
+<br>
+<form action="/calls/start" method="post">
+  <input type="submit" value="Start Auto Dialing">
+</form>
