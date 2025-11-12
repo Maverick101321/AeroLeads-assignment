@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  phone_number: MyString
+  status: MyString
+  last_called_at: 2025-11-08 23:36:52
+
+two:
+  phone_number: MyString
+  status: MyString
+  last_called_at: 2025-11-08 23:36:52
