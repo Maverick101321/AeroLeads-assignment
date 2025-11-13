@@ -3,7 +3,7 @@ class DialNextJob < ApplicationJob
 
   def perform(contact_id)
     contact = Contact.find(contact_id)
-    return if contact.status != "pending"
+    return unless ["pending", "retry"].include?(contact.status)
 
     contact.update(status: "in_progress")
 
@@ -17,7 +17,7 @@ class DialNextJob < ApplicationJob
       to:   contact.phone_number,
       url:  "#{ENV["PUBLIC_HOST"]}/calls/twiml",
       status_callback: "#{ENV["PUBLIC_HOST"]}/calls/status?contact_id=#{contact.id}",
-      status_callback_event: ["completed"]
+      status_callback_event: ["initiated", "ringing", "answered", "completed", "busy", "failed", "no-answer", "canceled"]
     )
 
     CallLog.create!(

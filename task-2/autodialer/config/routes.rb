@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   post "/calls/start" => "calls#start_batch"
 
-  post "/calls/status" => "calls#status"
+  match "/calls/status" => "calls#status", via: [:get, :post]
 
   post "/calls/twiml" => "calls#twiml"
 
