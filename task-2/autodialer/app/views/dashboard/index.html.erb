@@ -1,17 +1,47 @@
-<h1>Autodialer Dashboard</h1>
+<% content_for :title, "Dashboard · Autodialer" %>
 
-<table border="1" cellpadding="8">
-  <tr><th>Phone Number</th><th>Status</th><th>Last Called</th></tr>
-  <% @contacts.each do |c| %>
-    <tr>
-      <td><%= c.phone_number %></td>
-      <td><%= c.status %></td>
-      <td><%= c.last_called_at %></td>
-    </tr>
-  <% end %>
-</table>
+<div class="dashboard">
+  <section class="dashboard-card">
+    <header class="card-header">
+      <div>
+        <h1>Autodialer Dashboard</h1>
+        <p class="card-subtitle">Monitor call progress and launch a new dialing run at any time.</p>
+      </div>
 
-<br>
-<form action="/calls/start" method="post">
-  <input type="submit" value="Start Auto Dialing">
-</form>
+      <%= form_with url: "/calls/start", method: :post, local: true, class: "action-form" do %>
+        <%= submit_tag "Start Auto Dialing", class: "btn-primary" %>
+      <% end %>
+    </header>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Phone Number</th>
+            <th>Status</th>
+            <th>Last Called</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @contacts.any? %>
+            <% @contacts.each do |contact| %>
+              <% status_value = contact.status.to_s.presence || "pending" %>
+              <% status_key = status_value.parameterize %>
+              <tr>
+                <td><%= contact.phone_number %></td>
+                <td><span class="status-pill status-<%= status_key %>"><%= status_value.titleize %></span></td>
+                <td><%= contact.last_called_at&.strftime("%b %d, %Y %l:%M %p") || "Not yet" %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="3" class="empty-state">
+                No contacts scheduled yet. Visit the contacts page to add numbers and start dialing.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

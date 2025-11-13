@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="light">
   <head>
     <title><%= content_for(:title) || "Autodialer" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -23,7 +23,31 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body data-controller="theme" class="preload">
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand-group">
+          <div class="brand-logo">AD</div>
+          <div>
+            <div>Autodialer</div>
+            <p class="brand-tagline">Automate outreach, stay in control.</p>
+          </div>
+        </div>
+
+        <nav class="app-nav" aria-label="Primary">
+          <%= link_to "Dashboard", root_path %>
+          <%= link_to "Contacts", contacts_path %>
+        </nav>
+
+        <button class="theme-toggle" type="button" data-action="click->theme#toggle" aria-label="Toggle theme">
+          <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
+          <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
+        </button>
+      </header>
+
+      <main class="app-main">
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>
