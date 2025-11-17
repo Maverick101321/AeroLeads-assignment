@@ -44,4 +44,56 @@
       </table>
     </div>
   </section>
+
+  <section class="dashboard-card">
+    <header class="card-header">
+      <div>
+        <h2>Recent Call Logs</h2>
+        <p class="card-subtitle">History of recent autodial attempts and their outcomes.</p>
+      </div>
+    </header>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Phone Number</th>
+            <th>Call Status</th>
+            <th>Started At</th>
+            <th>Ended At</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @call_logs&.any? %>
+            <% @call_logs.each do |log| %>
+              <% call_status_value = log.status.to_s.presence || "unknown" %>
+              <% call_status_key = call_status_value.parameterize %>
+              <tr>
+                <td><%= log.contact.phone_number %></td>
+                <td><span class="status-pill status-<%= call_status_key %>"><%= call_status_value.titleize %></span></td>
+                <td><%= log.started_at&.strftime("%b %d, %Y %l:%M %p") || "—" %></td>
+                <td><%= log.ended_at&.strftime("%b %d, %Y %l:%M %p") || "—" %></td>
+                <td>
+                  <% if log.error_message.present? %>
+                    <span class="error-message" title="<%= log.error_message %>">
+                      <%= truncate(log.error_message, length: 50) %>
+                    </span>
+                  <% else %>
+                    <span class="text-muted">—</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="empty-state">
+                No call logs yet. Start auto dialing to see call history here.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>

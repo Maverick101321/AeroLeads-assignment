@@ -18,6 +18,7 @@ Rails.application.configure do
   # Use async adapter for Active Job
   config.active_job.queue_adapter = :async
 
+  config.hosts << "quadruplicature-damon-peaky.ngrok-free.dev"
 
   # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
   # Run rails dev:cache to toggle Action Controller caching.

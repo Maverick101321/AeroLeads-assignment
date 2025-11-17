@@ -27,11 +27,15 @@ class DialNextJob < ApplicationJob
       started_at: Time.current
     )
   rescue => e
-    contact.update(status: "failed")
+    contact.update(status: "failed", last_called_at: Time.current)
     CallLog.create!(
       contact: contact,
       status: "error",
       error_message: e.message
     )
+
+    # 🔁 move on to the next pending number even if this one failed
+    next_contact = Contact.where(status: "pending").order(:id).first
+    DialNextJob.perform_later(next_contact.id) if next_contact
   end
 end
