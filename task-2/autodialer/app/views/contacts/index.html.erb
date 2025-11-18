@@ -1,0 +1,60 @@
+<% content_for :title, "Add Contacts · Autodialer" %>
+
+<div class="dashboard">
+  <section class="dashboard-card">
+    <header class="card-header">
+      <div>
+        <h1>Add Contacts</h1>
+        <p class="card-subtitle">
+          Paste up to 100 numbers, one per line. We accept 10-digit numbers (auto +91) or full +country codes.
+        </p>
+      </div>
+    </header>
+
+    <%= form_with url: contacts_path, method: :post, local: true, class: "stacked-form" do |form| %>
+      <div class="form-group">
+        <%= form.label :numbers, "Phone numbers" %>
+        <%= form.text_area :numbers,
+          rows: 10,
+          placeholder: "Paste up to 100 numbers, one per line (10-digit or +91…)",
+          class: "textarea" %>
+      </div>
+
+      <%= form.submit "Save Contacts", class: "btn-primary" %>
+    <% end %>
+  </section>
+
+  <% if @contacts.any? %>
+    <section class="dashboard-card">
+      <header class="card-header">
+        <div>
+          <h2>Recently Added Contacts</h2>
+          <p class="card-subtitle">Latest phone numbers waiting to be dialed.</p>
+        </div>
+      </header>
+
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Phone Number</th>
+              <th>Status</th>
+              <th>Last Called</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @contacts.order(id: :desc).limit(20).each do |contact| %>
+              <% status_value = contact.status.to_s.presence || "pending" %>
+              <% status_key = status_value.parameterize %>
+              <tr>
+                <td><%= contact.phone_number %></td>
+                <td><span class="status-pill status-<%= status_key %>"><%= status_value.titleize %></span></td>
+                <td><%= contact.last_called_at&.strftime("%b %d, %Y %l:%M %p") || "Not yet" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</div>
