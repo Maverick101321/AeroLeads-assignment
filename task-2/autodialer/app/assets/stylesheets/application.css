@@ -211,6 +211,53 @@
     transform: translateY(-1px);
     box-shadow: 0 18px 30px -15px rgba(37, 99, 235, 0.72);
   }
+
+  .btn-secondary {
+    appearance: none;
+    border: 1px solid var(--color-border);
+    border-radius: 0.9rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 120ms ease, transform 120ms ease;
+  }
+
+  .btn-secondary:hover,
+  .btn-secondary:focus-visible {
+    background: var(--color-surface-alt);
+    transform: translateY(-1px);
+  }
+
+  .form-input {
+    appearance: none;
+    border: 1px solid var(--color-border);
+    border-radius: 0.9rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 120ms ease;
+    min-width: 250px;
+  }
+
+  .form-input:focus {
+    border-color: var(--color-primary);
+  }
+
+  .prompt-form {
+    gap: 0.5rem;
+  }
+
+  .actions-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
   
   .table-wrapper {
     overflow-x: auto;

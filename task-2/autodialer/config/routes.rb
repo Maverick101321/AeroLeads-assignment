@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :contacts, only: [:create, :index]
 
   post "/calls/start" => "calls#start_batch"
+  post "/calls/start_prompt" => "calls#start_prompt"
 
   match "/calls/status" => "calls#status", via: [:get, :post]
 

@@ -13,6 +13,12 @@ class CallsController < ApplicationController
     end
   end
 
+  def start_prompt
+    prompt = params[:prompt]
+    # TODO: Implement prompt processing logic
+    render plain: "Prompt received: #{prompt}"
+  end
+
   def twiml
     response = Twilio::TwiML::VoiceResponse.new
     response.say(

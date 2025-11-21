@@ -8,9 +8,16 @@
         <p class="card-subtitle">Monitor call progress and launch a new dialing run at any time.</p>
       </div>
 
-      <%= form_with url: "/calls/start", method: :post, local: true, class: "action-form" do %>
-        <%= submit_tag "Start Auto Dialing", class: "btn-primary" %>
-      <% end %>
+      <div class="actions-group">
+        <%= form_with url: "/calls/start", method: :post, local: true, class: "action-form" do %>
+          <%= submit_tag "Start Auto Dialing", class: "btn-primary" %>
+        <% end %>
+
+        <%= form_with url: "/calls/start_prompt", method: :post, local: true, class: "action-form prompt-form" do |f| %>
+          <%= f.text_field :prompt, placeholder: 'e.g. "make a call to 9876543210"', class: "form-input" %>
+          <%= f.submit "Run Prompt", class: "btn-secondary" %>
+        <% end %>
+      </div>
     </header>
 
     <div class="table-wrapper">
