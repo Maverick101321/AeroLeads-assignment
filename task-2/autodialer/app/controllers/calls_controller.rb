@@ -14,9 +14,31 @@ class CallsController < ApplicationController
   end
 
   def start_prompt
-    prompt = params[:prompt]
-    # TODO: Implement prompt processing logic
-    render plain: "Prompt received: #{prompt}"
+    prompt = params[:prompt].to_s
+    # Extract phone number: 10-13 digits, optionally with +
+    match = prompt.match(/\+?\d{10,13}/)
+
+    unless match
+      redirect_to root_path, alert: "Could not find a phone number in your prompt."
+      return
+    end
+
+    phone_number = match[0]
+
+    # Normalize: if 10 digits and no +, prefix +91
+    if phone_number.match?(/^\d{10}$/)
+      phone_number = "+91#{phone_number}"
+    end
+
+    # Create or reuse contact
+    contact = Contact.find_or_initialize_by(phone_number: phone_number)
+    contact.status = "pending"
+    contact.save!
+
+    # Enqueue job
+    DialNextJob.perform_later(contact.id)
+
+    redirect_to root_path, notice: "Calling #{phone_number} based on your prompt."
   end
 
   def twiml
