@@ -1,0 +1,29 @@
+<% content_for :title, "Generate AI Articles · Autodialer" %>
+
+<div class="dashboard">
+  <section class="dashboard-card">
+    <header class="card-header">
+      <div>
+        <h1>Generate AI Articles</h1>
+        <p class="card-subtitle">
+          Enter article titles below, and we'll generate content for each one.
+        </p>
+      </div>
+    </header>
+
+    <%= form_with url: "/blog/generate", method: :post, local: true, class: "stacked-form" do |form| %>
+      <div class="form-group">
+        <%= form.label :titles, "Article Titles", class: "form-label" %>
+        <%= form.text_area :titles,
+          rows: 10,
+          placeholder: "Enter up to 10 titles, one per line\ne.g. The Future of AI\nTop 10 Sales Strategies",
+          class: "form-input textarea" %>
+        <p class="form-hint">One title per line. Max 10 titles.</p>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Generate Articles", class: "btn-primary btn-block" %>
+      </div>
+    <% end %>
+  </section>
+</div>

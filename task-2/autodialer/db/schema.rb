@@ -10,7 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_08_180749) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_22_123624) do
+  create_table "blogs", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "call_logs", force: :cascade do |t|
     t.integer "contact_id", null: false
     t.datetime "created_at", null: false

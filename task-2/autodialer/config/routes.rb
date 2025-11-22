@@ -3,6 +3,10 @@ Rails.application.routes.draw do
   root "dashboard#index"
 
   resources :contacts, only: [:create, :index]
+  resources :blogs, only: [:index, :show]
+
+  get "/blog/generate" => "blogs#new"
+  post "/blog/generate" => "blogs#create_multiple"
 
   post "/calls/start" => "calls#start_batch"
   post "/calls/start_prompt" => "calls#start_prompt"

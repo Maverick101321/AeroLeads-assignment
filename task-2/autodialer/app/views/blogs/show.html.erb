@@ -1,0 +1,22 @@
+<% content_for :title, "#{@blog.title} · Autodialer" %>
+
+<div class="dashboard">
+  <div class="app-nav" style="margin-bottom: 1rem;">
+    <%= link_to "← Back to Articles", blogs_path, class: "text-primary", style: "display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 500;" %>
+  </div>
+
+  <article class="dashboard-card" style="max-width: 800px; margin: 0 auto;">
+    <header class="card-header" style="border-bottom: 1px solid var(--color-border); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+      <div>
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1.2;"><%= @blog.title %></h1>
+        <p class="card-subtitle">
+          Generated on <%= @blog.created_at.strftime("%B %d, %Y") %>
+        </p>
+      </div>
+    </header>
+
+    <div class="article-content" style="line-height: 1.8; font-size: 1.1rem; color: var(--color-text);">
+      <%= simple_format(@blog.body) %>
+    </div>
+  </article>
+</div>
