@@ -16,7 +16,7 @@
     </header>
 
     <div class="article-content" style="line-height: 1.8; font-size: 1.1rem; color: var(--color-text);">
-      <%= simple_format(@blog.body) %>
+      <%= raw @blog.body %>
     </div>
   </article>
 </div>
