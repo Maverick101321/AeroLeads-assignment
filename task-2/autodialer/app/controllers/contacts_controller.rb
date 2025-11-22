@@ -1,32 +1,46 @@
+require "csv"
+
 class ContactsController < ApplicationController
-    def index
-      @contacts = Contact.order(:id)
-    end
-  
-    def create
-        raw_numbers = params[:numbers].to_s.lines
-    
-        cleaned_numbers =
-          raw_numbers
-            .map { |line| normalize_phone(line) }
-            .compact
-            .uniq
-            .first(100) # enforce “Paste up to 100 numbers”
-    
-        cleaned_numbers.each do |phone|
-          Contact.create!(
-            phone_number: phone,
-            status: "pending",
-            last_called_at: nil
-          )
-        end
-    
-        flash[:notice] = "Added #{cleaned_numbers.count} contacts."
-        redirect_to contacts_path
-      rescue ActiveRecord::RecordInvalid => e
-        flash[:alert] = "Could not add contacts: #{e.message}"
-        redirect_to contacts_path
+  def index
+    @contacts = Contact.order(:id)
+  end
+
+  def create
+    raw_numbers = params[:numbers].to_s.lines.map(&:strip)
+
+    if params[:file].present?
+      begin
+        file_content = params[:file].read
+        # Try parsing as CSV (handles both CSV and simple text lines)
+        csv = CSV.parse(file_content)
+        raw_numbers += csv.flatten.map(&:to_s).map(&:strip)
+      rescue => e
+        # Fallback or ignore if parsing fails (e.g. binary file)
+        Rails.logger.error "File import failed: #{e.message}"
       end
+    end
+
+    cleaned_numbers =
+      raw_numbers
+        .map { |line| normalize_phone(line) }
+        .compact
+        .uniq
+        .first(100) # enforce “Paste up to 100 numbers”
+    
+    cleaned_numbers.each do |phone|
+      Contact.create!(
+        phone_number: phone,
+        status: "pending",
+        last_called_at: nil
+      )
+    end
+
+    flash[:notice] = "Added #{cleaned_numbers.count} contacts."
+    redirect_to contacts_path
+  rescue ActiveRecord::RecordInvalid => e
+    flash[:alert] = "Could not add contacts: #{e.message}"
+    redirect_to contacts_path
+  end
   
     private
   
@@ -52,4 +66,4 @@ class ContactsController < ApplicationController
   
       normalized
     end
-  end
+end

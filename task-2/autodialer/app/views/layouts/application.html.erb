@@ -46,6 +46,11 @@
       </header>
 
       <main class="app-main">
+        <% flash.each do |type, message| %>
+          <div class="flash-message flash-<%= type %>">
+            <%= message %>
+          </div>
+        <% end %>
         <%= yield %>
       </main>
     </div>
